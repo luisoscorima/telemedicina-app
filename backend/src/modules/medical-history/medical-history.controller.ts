@@ -17,6 +17,20 @@ export class MedicalHistoryController {
     return this.service.create(dto, doctor);
   }
 
+  @Get('all-grouped')
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  async findAllGrouped() {
+    return this.service.findAllGrouped();
+  }
+
+  @Get()
+  @Roles('admin')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  findAll() {
+    return this.service.findAll(); // Ahora debes crear el método en el service
+  }
+
   @Get(':patientId')
   getByPatient(@Param('patientId') patientId: string, @GetUser() user: User) {
     if (user.role !== 'doctor' && user.role !== 'admin' && user.id !== patientId) {
@@ -26,7 +40,7 @@ export class MedicalHistoryController {
   }
 
   @Patch(':id')
-  @Roles('admin','doctor')
+  @Roles('admin', 'doctor')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   async updateRecord(@Param('id') id: string, @Body() dto: { description: string }) {
     return this.service.updateRecord(id, dto.description);
@@ -38,5 +52,4 @@ export class MedicalHistoryController {
   async deleteRecord(@Param('id') id: string) {
     return this.service.deleteRecord(id);
   }
-
 }

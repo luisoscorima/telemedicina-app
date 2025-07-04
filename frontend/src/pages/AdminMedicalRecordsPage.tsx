@@ -2,50 +2,46 @@ import { useEffect, useState } from 'react';
 import axios from '../api/axios';
 
 export default function AdminMedicalRecordsPage() {
-  const [records, setRecords] = useState<any[]>([]);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [newDesc, setNewDesc] = useState('');
+  const [groups, setGroups] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('/medical-history')
-      .then(res => setRecords(res.data));
+    axios.get('/medical-history/all-grouped')
+      .then(res => setGroups(res.data))
+      .finally(() => setLoading(false));
   }, []);
 
-  const startEditing = (id: string, desc: string) => {
-    setEditingId(id);
-    setNewDesc(desc);
-  };
-
-  const saveEdit = async (e: any) => {
-    e.preventDefault();
-    if (!editingId) return;
-    await axios.patch(`/medical-history/${editingId}`, { description: newDesc });
-    setEditingId(null);
-    // recargar lista
-    const res = await axios.get('/medical-history');
-    setRecords(res.data);
-  };
-
-  const deleteRecord = async (id: string) => {
-    await axios.delete(`/medical-history/${id}`);
-    setRecords(records.filter(r => r.id !== id));
-  };
-
   return (
-    <ul>
-      {records.map((rec) => (
-        <li key={rec.id}>
-          <b>Descripción:</b> {rec.description}
-          <button onClick={() => startEditing(rec.id, rec.description)}>Editar</button>
-          <button onClick={() => deleteRecord(rec.id)}>Eliminar</button>
-          {editingId === rec.id && (
-            <form onSubmit={saveEdit}>
-              <input value={newDesc} onChange={e => setNewDesc(e.target.value)} />
-              <button type="submit">Guardar</button>
-            </form>
-          )}
-        </li>
-      ))}
-    </ul>
+    <div className="container">
+      <h2>🩺 Historiales médicos de todos los pacientes</h2>
+      {loading && <p>Cargando...</p>}
+      {!loading && groups.length === 0 && <p>No hay registros médicos.</p>}
+      <div>
+        {groups.map((g: any) => (
+          <div key={g.patient?.id} style={{
+            border: '1px solid #e0e0e0',
+            borderRadius: 8,
+            margin: '22px 0',
+            padding: 18,
+            background: '#fafbfc'
+          }}>
+            <h3 style={{ marginBottom: 6, color: '#1976d2' }}>
+              Paciente: <b>{g.patient?.name || 'Desconocido'}</b> ({g.patient?.email})
+            </h3>
+            <ul style={{ paddingLeft: 18 }}>
+              {g.records.map((rec: any) => (
+                <li key={rec.id} style={{ marginBottom: 9 }}>
+                  <span>
+                    <b>Fecha:</b> {new Date(rec.createdAt).toLocaleString()}<br />
+                    <b>Doctor:</b> {rec.doctor?.name || 'N/A'}<br />
+                    <b>Descripción:</b> {rec.description}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

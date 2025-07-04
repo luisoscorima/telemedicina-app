@@ -63,4 +63,33 @@ export class MedicalHistoryService {
     if (!record) throw new NotFoundException('Registro no encontrado');
     return this.recordRepo.remove(record);
   }
+
+  async findAll() {
+    return this.recordRepo.find({
+      order: { createdAt: 'DESC' },
+      relations: ['patient', 'doctor'],
+    });
+  }
+
+  async findAllGrouped() {
+    const records = await this.recordRepo.find({
+      order: { createdAt: 'DESC' },
+      relations: ['patient', 'doctor'],
+    });
+
+    // Agrupa por paciente
+    const grouped = records.reduce((acc, rec) => {
+      const key = rec.patient?.id || 'desconocido';
+      if (!acc[key]) {
+        acc[key] = {
+          patient: rec.patient,
+          records: []
+        };
+      }
+      acc[key].records.push(rec);
+      return acc;
+    }, {});
+
+    return Object.values(grouped); // [{ patient, records: [ ... ] }, ...]
+  }
 }
