@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from '../api/axios';
+import PatientMedicalHistoryMini from './PatientMedicalHistoryMini';
+import NewMedicalRecordForm from './NewMedicalRecordForm';
 
 interface Appointment {
   id: string;
@@ -15,7 +17,7 @@ export default function DoctorAppointments() {
   const loadAppointments = async () => {
     try {
       const res = await axios.get('/appointments');
-      const doctorAppointments = res.data.filter((a: Appointment) => a.patient); // asegura que tiene paciente asociado
+      const doctorAppointments = res.data.filter((a: Appointment) => a.patient);
       setAppointments(doctorAppointments);
     } catch (err) {
       alert('Error al cargar citas');
@@ -25,7 +27,7 @@ export default function DoctorAppointments() {
   const updateStatus = async (id: string, status: 'confirmed' | 'cancelled') => {
     try {
       await axios.patch(`/appointments/${id}`, { status });
-      await loadAppointments(); // recarga después de actualizar
+      await loadAppointments();
     } catch (err) {
       alert('Error al actualizar estado');
     }
@@ -53,6 +55,17 @@ export default function DoctorAppointments() {
                 </>
               )}
             </div>
+
+            {/* Muestra el formulario solo para citas confirmadas */}
+            {a.status === 'confirmed' && (
+              <NewMedicalRecordForm patientId={a.patient.id} onCreated={() => {}} />
+              // Puedes pasarle onCreated={() => {/* recargar historial si lo deseas */}}
+            )}
+
+            {/* Muestra el historial médico del paciente */}
+            {a.patient?.id && (
+              <PatientMedicalHistoryMini patientId={a.patient.id} />
+            )}
             <hr />
           </li>
         ))}

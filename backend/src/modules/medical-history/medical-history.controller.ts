@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { MedicalHistoryService } from './medical-history.service';
 import { CreateMedicalRecordDto } from './dto/create-medical-record.dto';
@@ -8,7 +8,7 @@ import { User } from '../users/entities/user.entity';
 @UseGuards(AuthGuard('jwt'))
 @Controller('medical-history')
 export class MedicalHistoryController {
-  constructor(private readonly service: MedicalHistoryService) {}
+  constructor(private readonly service: MedicalHistoryService) { }
 
   @Post()
   create(@Body() dto: CreateMedicalRecordDto, @GetUser() doctor: User) {
@@ -16,7 +16,11 @@ export class MedicalHistoryController {
   }
 
   @Get(':patientId')
-  getByPatient(@Param('patientId') patientId: string) {
+  getByPatient(@Param('patientId') patientId: string, @GetUser() user: User) {
+    if (user.role !== 'doctor' && user.role !== 'admin' && user.id !== patientId) {
+      throw new UnauthorizedException('No autorizado');
+    }
     return this.service.findByPatient(patientId);
   }
+
 }

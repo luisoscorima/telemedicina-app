@@ -8,6 +8,7 @@ import PatientPage from './pages/PatientPage';
 import CreateAppointmentPage from './pages/CreateAppointmentPage';
 import PatientAppointments from './pages/PatientAppointments';
 import DoctorAppointments from './pages/DoctorAppointments';
+import PatientMedicalHistory from './pages/PatientMedicalHistory';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/patient" element={<PatientPage />} />
             <Route path="/patient/crear-cita" element={<CreateAppointmentPage />} />
             <Route path="/patient/appointments" element={<PatientAppointments />} />
+            <Route path="/patient/medical-history" element={<PatientMedicalHistory />} />
           </Route>
 
           {/* 🔁 Redirige / a /login */}

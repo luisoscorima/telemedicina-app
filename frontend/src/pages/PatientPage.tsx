@@ -14,6 +14,10 @@ const PatientPage = () => {
       <button onClick={() => navigate('/patient/crear-cita')} style={{ marginLeft: '10px' }}>
         Agendar nueva cita
       </button>
+
+      <button onClick={() => navigate('/patient/medical-history')} style={{ marginLeft: '10px' }}>
+        Ver mi historial médico
+      </button>
     </div>
   );
 };
