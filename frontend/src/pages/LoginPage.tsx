@@ -27,12 +27,14 @@ const LoginPage = () => {
 
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Iniciar sesión</h2>
-      <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" />
-      <button type="submit">Ingresar</button>
-    </form>
+    <div className="container">
+      <form onSubmit={handleSubmit}>
+        <h2>Iniciar sesión</h2>
+        <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" />
+        <button type="submit">Ingresar</button>
+      </form>
+    </div>
   );
 };
 

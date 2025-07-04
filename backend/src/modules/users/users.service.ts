@@ -49,4 +49,22 @@ export class UsersService {
         return this.userRepo.findOneBy({ email });
     }
 
+    async createUser(dto: CreateUserDto) {
+        const user = this.userRepo.create(dto);
+        return this.userRepo.save(user);
+    }
+
+    async updateUser(id: string, dto: UpdateUserDto) {
+        const user = await this.userRepo.findOne({ where: { id } });
+        if (!user) throw new NotFoundException('Usuario no encontrado');
+        Object.assign(user, dto);
+        return this.userRepo.save(user);
+    }
+
+    async deleteUser(id: string) {
+        const user = await this.userRepo.findOne({ where: { id } });
+        if (!user) throw new NotFoundException('Usuario no encontrado');
+        return this.userRepo.remove(user);
+    }
+
 }

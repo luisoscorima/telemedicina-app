@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -11,11 +11,6 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
-
-  @Post()
-  create(@Body() dto: CreateUserDto) {
-    return this.usersService.create(dto);
-  }
 
   @Get()
   findAll() {
@@ -65,17 +60,26 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.usersService.update(id, dto);
+  // Crear usuario
+  @Post()
+  @Roles('admin')
+  async createUser(@Body() dto: CreateUserDto) {
+    return this.usersService.createUser(dto);
   }
 
+  // Actualizar usuario
+  @Patch(':id')
+  @Roles('admin')
+  async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return this.usersService.updateUser(id, dto);
+  }
+
+  // Eliminar usuario
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @Roles('admin')
+  async deleteUser(@Param('id') id: string) {
+    return this.usersService.deleteUser(id);
   }
-
-
 
   //@Roles('admin', 'doctor')
   //para que un usuario admin o doctor pueda acceder a esta ruta

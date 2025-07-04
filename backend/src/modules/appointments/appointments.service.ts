@@ -31,7 +31,8 @@ export class AppointmentsService {
       doctor: { id: dto.doctorId } as User,
       patient: { id: patient.id } as User,
     });
-
+    
+    console.log(`NOTIFICACIÓN: Se enviaría un email a ${patient.email} avisando que su cita fue registrada correctamente.`);
     return this.appointmentsRepository.save(appointment);
 
   }

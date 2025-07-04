@@ -29,12 +29,18 @@ export class MedicalHistoryService {
       throw new NotFoundException('Paciente no encontrado');
     }
 
+    const patient = await this.userRepo.findOne({ where: { id: dto.patientId, role: 'patient' } });
+    if (!patient) {
+      throw new NotFoundException('Paciente no encontrado');
+    }
+
     const record = this.recordRepo.create({
       description: dto.description,
       patient: { id: dto.patientId } as User,
       doctor: { id: doctor.id } as User,
     });
 
+    console.log(`NOTIFICACIÓN: Se enviaría un email a ${patient.email} avisando que hay un nuevo diagnóstico en su historial.`);
     return this.recordRepo.save(record);
   }
 
@@ -43,5 +49,18 @@ export class MedicalHistoryService {
       where: { patient: { id: patientId } },
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async updateRecord(id: string, description: string) {
+    const record = await this.recordRepo.findOne({ where: { id } });
+    if (!record) throw new NotFoundException('Registro no encontrado');
+    record.description = description;
+    return this.recordRepo.save(record);
+  }
+
+  async deleteRecord(id: string) {
+    const record = await this.recordRepo.findOne({ where: { id } });
+    if (!record) throw new NotFoundException('Registro no encontrado');
+    return this.recordRepo.remove(record);
   }
 }

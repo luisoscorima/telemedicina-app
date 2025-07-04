@@ -12,6 +12,8 @@ export default function NewMedicalRecordForm({ patientId, onCreated }: { patient
     setError('');
     try {
       await axios.post('/medical-history', { patientId, description });
+      alert('Diagnóstico registrado');
+      alert('Se enviaría una alerta al paciente por email');
       setDescription('');
       onCreated();
     } catch (err: any) {

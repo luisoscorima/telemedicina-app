@@ -27,6 +27,7 @@ export default function CreateAppointmentPage() {
     try {
       await axios.post('/appointments', { reason, date, doctorId });
       alert('Cita creada exitosamente');
+      alert('Se enviaría un correo de notificación al doctor.');
       navigate('/patient');
     } catch (err) {
       alert('Error al crear cita');

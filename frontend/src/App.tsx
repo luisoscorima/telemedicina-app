@@ -9,6 +9,11 @@ import CreateAppointmentPage from './pages/CreateAppointmentPage';
 import PatientAppointments from './pages/PatientAppointments';
 import DoctorAppointments from './pages/DoctorAppointments';
 import PatientMedicalHistory from './pages/PatientMedicalHistory';
+import PatientDetailPage from './pages/PatientDetailPage';
+import UsersListPage from './pages/UsersListPage';
+import AllAppointmentsPage from './pages/AllAppointmentsPage';
+import AdminMedicalRecordsPage from './pages/AdminMedicalRecordsPage';
+import VideoCallPage from './pages/VideoCallPage';
 
 function App() {
   return (
@@ -20,6 +25,9 @@ function App() {
 
           <Route element={<PrivateRoute roles={['admin']} />}>
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin/users" element={<UsersListPage />} />
+            <Route path="/admin/appointments" element={<AllAppointmentsPage />} />
+            <Route path="/admin/medical-records" element={<AdminMedicalRecordsPage />} />
           </Route>
 
           <Route element={<PrivateRoute roles={['doctor']} />}>
@@ -27,11 +35,19 @@ function App() {
             <Route path="/doctor/appointments" element={<DoctorAppointments />} />
           </Route>
 
+          <Route element={<PrivateRoute roles={['doctor', 'admin']} />}>
+            <Route path="/doctor/patient/:patientId" element={<PatientDetailPage />} />
+          </Route>
+
           <Route element={<PrivateRoute roles={['patient']} />}>
             <Route path="/patient" element={<PatientPage />} />
             <Route path="/patient/crear-cita" element={<CreateAppointmentPage />} />
             <Route path="/patient/appointments" element={<PatientAppointments />} />
             <Route path="/patient/medical-history" element={<PatientMedicalHistory />} />
+          </Route>
+
+          <Route element={<PrivateRoute roles={['doctor', 'patient']} />}>
+            <Route path="/videollamada/:appointmentId" element={<VideoCallPage />} />
           </Route>
 
           {/* 🔁 Redirige / a /login */}

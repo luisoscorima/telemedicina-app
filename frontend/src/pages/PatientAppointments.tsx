@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
 interface Appointment {
   id: string;
@@ -8,12 +9,13 @@ interface Appointment {
   status: string;
   doctor: {
     id: string;
-    name?: string; // si en el backend incluyes name
+    name?: string;
   };
 }
 
 const PatientAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const navigate = useNavigate();
 
   const fetchAppointments = async () => {
     try {
@@ -27,7 +29,7 @@ const PatientAppointments = () => {
   const cancelAppointment = async (id: string) => {
     try {
       await axios.put(`/appointments/${id}`, { status: 'cancelled' });
-      fetchAppointments(); // recargar citas
+      fetchAppointments();
     } catch (err) {
       alert('No se pudo cancelar la cita');
     }
@@ -47,6 +49,15 @@ const PatientAppointments = () => {
             {appt.status === 'pending' && (
               <button onClick={() => cancelAppointment(appt.id)} style={{ marginLeft: '10px' }}>
                 Cancelar
+              </button>
+            )}
+            {/* Botón de videollamada para citas confirmadas */}
+            {appt.status === 'confirmed' && (
+              <button
+                style={{ marginLeft: 10 }}
+                onClick={() => navigate(`/videollamada/${appt.id}`)}
+              >
+                Iniciar videollamada
               </button>
             )}
           </li>

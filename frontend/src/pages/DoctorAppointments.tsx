@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from '../api/axios';
 import PatientMedicalHistoryMini from './PatientMedicalHistoryMini';
 import NewMedicalRecordForm from './NewMedicalRecordForm';
+import { useNavigate } from 'react-router-dom';
 
 interface Appointment {
   id: string;
@@ -13,6 +14,7 @@ interface Appointment {
 
 export default function DoctorAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const navigate = useNavigate();
 
   const loadAppointments = async () => {
     try {
@@ -45,7 +47,14 @@ export default function DoctorAppointments() {
         {appointments.map((a) => (
           <li key={a.id}>
             <strong>{a.reason}</strong> - {new Date(a.date).toLocaleString()}<br />
-            Paciente: {a.patient?.name || 'N/A'}<br />
+            Paciente:{" "}
+            <span
+              style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+              onClick={() => navigate(`/doctor/patient/${a.patient.id}`)}
+            >
+              {a.patient?.name || 'N/A'}
+            </span>
+            <br />
             Estado: <b>{a.status}</b>
             <div>
               {a.status === 'pending' && (
@@ -56,13 +65,22 @@ export default function DoctorAppointments() {
               )}
             </div>
 
-            {/* Muestra el formulario solo para citas confirmadas */}
+            {/* Botón de videollamada para confirmadas */}
             {a.status === 'confirmed' && (
-              <NewMedicalRecordForm patientId={a.patient.id} onCreated={() => {}} />
-              // Puedes pasarle onCreated={() => {/* recargar historial si lo deseas */}}
+              <button
+                style={{ marginTop: 8, marginBottom: 5 }}
+                onClick={() => navigate(`/videollamada/${a.id}`)}
+              >
+                Iniciar videollamada
+              </button>
             )}
 
-            {/* Muestra el historial médico del paciente */}
+            {/* Formulario para registrar diagnóstico */}
+            {a.status === 'confirmed' && (
+              <NewMedicalRecordForm patientId={a.patient.id} onCreated={() => {}} />
+            )}
+
+            {/* Historial médico del paciente */}
             {a.patient?.id && (
               <PatientMedicalHistoryMini patientId={a.patient.id} />
             )}
